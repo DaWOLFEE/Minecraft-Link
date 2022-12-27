@@ -35,10 +35,13 @@ app.get('/api/auth/discord/redirect', async ({ query }, response) => {
 				},
 			});
 
+            console.log(userResult.headers);
             let user = await userResult.body.json();
 
             let oauth = new Database('Dev_Link');
-            await oauth.query(`INSERT INTO Tokens (DiscordID, Auth, Refresh, Timestamp) VALUES (${user.id}, '${oauthData.access_token}', '${oauthData.refresh_token}', ${Date.now() + (oauthData.expires_in * 1000)})`) 
+            let authed = await oauth.query(`SELECT DiscordID FROM Tokens WHERE DiscordID = ${user.id}`);
+            authed ? await oauth.query(`UPDATE Tokens SET Auth = '${oauthData.access_token}', Refresh = '${oauthData.refresh_token}', Expires = ${Date.now() + (oauthData.expires_in * 1000)} WHERE DiscordID = ${user.id}`) : await oauth.query(`INSERT INTO Tokens (DiscordID, Auth, Refresh, Timestamp) VALUES (${user.id}, '${oauthData.access_token}', '${oauthData.refresh_token}', ${Date.now() + (oauthData.expires_in * 1000)})`);
+            await oauth.close();
 
 			console.log(user);
 		} catch (error) {
@@ -48,7 +51,13 @@ app.get('/api/auth/discord/redirect', async ({ query }, response) => {
 		}
 	}
 
-	return response.sendStatus(200);
+	return response.redirect('https://discord.com/oauth2/authorized');
+});
+
+app.get('/api/user/?id', (req, res) => {
+    console.log(req);
 });
 
 app.listen(port, () => console.log(`${port}`));
+
+require('./refresh.js');

@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ECPE-Network/Minecraft-Link#readme",
   "dependencies": {
     "axios": "^1.2.1",
+    "cron": "^2.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mysql": "^2.18.1",
