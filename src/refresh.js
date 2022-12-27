@@ -1,4 +1,5 @@
 const Database = require('./resources/Database.js');
+const { request } = require('undici');
 
 let iterator = new CronJob('0 0 * * * *', async () => {
     const OAuth = new Database();
@@ -18,8 +19,7 @@ let iterator = new CronJob('0 0 * * * *', async () => {
                 .then(res => res.body.json())
                 .catch(console.trace);
 
-                await OAuth.query(`UPDATE Tokens SET Auth = '${refresh.access_token}', Refresh = '${refresh.refresh_token}', Expires = ${Date.now() + (refresh.expires_in * 1000)} WHERE DiscordID = '${DiscordID}'`);
-            //Hourly refresh of expired tokens
+            await OAuth.query(`UPDATE Tokens SET Auth = '${refresh.access_token}', Refresh = '${refresh.refresh_token}', Expires = ${Date.now() + (refresh.expires_in * 1000)} WHERE DiscordID = '${DiscordID}'`);
             //Remember to check response headers from Discord for rate limits
         }
     }
