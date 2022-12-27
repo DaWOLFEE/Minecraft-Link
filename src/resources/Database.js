@@ -1,12 +1,11 @@
 const mysql = require('mysql');
-const { sqlIP, sqlPass } = require('./../config.json');
 
 class Database {
-    constructor(database = "Gerold") {
+    constructor(database = "Dev_Link") {
         this.connection = mysql.createConnection({
-            host: sqlIP,
-            user: "Wolf",
-            password: sqlPass,
+            host: process.env.MYSQL_IP,
+            user: "Carson",
+            password: process.env.MYSQL_PASS,
             database: database
         });
     }
