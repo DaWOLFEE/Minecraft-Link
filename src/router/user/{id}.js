@@ -1,4 +1,5 @@
 const Database = require('../../resources/Database.js');
+const Xbox = require('../../resources/Xbox.js');
 const { request } = require('undici');
 
 module.exports = (app) => ({
@@ -35,7 +36,27 @@ module.exports = (app) => ({
         .then(res => res.body.json())
         .catch(console.trace);
 
-      return res.status(200).send(user);
+      if (typeof(user) !== 'object') return res.status(404).send(`User has no connections`);
+
+      const xbox = user.filter(({ type, two_way_link }) => type === 'xbox' && two_way_link);
+
+      /**
+       * If xbox.length > 1
+       * Add property "priority" and if the user has selected their account as a "main" account that will be 
+       * priority 1, then oldest account added would be 2, then 3, etc.
+       * 
+       * If no account was selected as main, then priority will go in order of oldest account added to newest account added
+       */
+
+      let optimized = [];
+      for (let { name } of xbox) {
+          let live = new Xbox({ username: name });
+          let xuid = await live.getXuid();
+
+          optimized.push({ gamertag: name, xuid: xuid });
+      }
+
+      return res.status(200).send(optimized);
     }
   },
 });

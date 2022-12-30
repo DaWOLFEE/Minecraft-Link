@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ECPE-Network/Minecraft-Link#readme",
   "dependencies": {
+    "app-xbox-live": "^1.2.7",
     "cron": "^2.1.0",
     "dotenv": "^16.0.3",
     "fastify": "^4.10.2",
