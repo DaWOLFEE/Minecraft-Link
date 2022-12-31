@@ -18,8 +18,11 @@
   "homepage": "https://github.com/ECPE-Network/Minecraft-Link#readme",
   "dependencies": {
     "@discordjs/builders": "^1.4.0",
+    "@fastify/websocket": "^7.1.1",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
+    "fastify": "^4.10.2",
+    "fastify-websocket": "^4.3.0",
     "nodemon": "^2.0.20"
   }
 }

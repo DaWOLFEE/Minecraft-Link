@@ -1,20 +1,17 @@
-const { readdir, lstat } = require('fs').promises;
-const p = require('path');
-
-let paths = [];
+const { parse, resolve } = require('path');
+const { readdirSync } = require('fs');
 
 module.exports = async bot => {
-    await findFiles(p.resolve('./interactions/'));
+    const Interactionfiles = getFiles('./interactions');
+    for (const file of Interactionfiles) {
+        let exported = require(resolve(file));
 
-    for (let file of paths.filter(x => x.endsWith('.js'))) {
-        let exported = require(p.resolve(file));
         exported.path = file;
-        bot.interactions.set(exported?.command?.name?.toLowerCase() || file.split('/').find(x => x.includes('.js')).replaceAll('.js', '').replaceAll('/', ''), exported);
+        bot.interactions.set(exported?.command?.name?.toLowerCase() || parse(file).name, exported);
     }
 }
 
-async function findFiles(path) {
-    for (let file of await readdir(path)) 
-        ((await lstat(p.join(path, file))).isDirectory()) ? paths.concat(await findFiles(p.join(path, file)) || []) : paths.push(`${path}/${file}`);
-    return paths;
+function getFiles(dir) {
+    return readdirSync(dir, { withFileTypes: true })
+        .map(file => file.isDirectory() ? getFiles(`${dir}/${file.name}`) : `${dir}/${file.name}`).flat();
 }
